@@ -44,7 +44,7 @@ const Index = () => {
             <CardTitle className="text-base">Funcionários Cadastrados</CardTitle>
           </CardHeader>
           <CardContent>
-            <EmployeeTable />
+            <EmployeeTable employees={employees} isLoading={isLoading} />
           </CardContent>
         </Card>
       </main>

@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ArrowUpDown, Search, Users } from "lucide-react";
-import { useEmployees } from "@/hooks/useEmployees";
 import { useDebounce } from "@/hooks/useDebounce";
 import { getEmployeeStatus } from "@/utils/dateUtils";
 import { Department, type Employee, type EmployeeStatus } from "@/types/employee";
@@ -27,10 +26,10 @@ import {
 type SortKey = "fullName" | "expirationDate";
 type SortDir = "asc" | "desc";
 
-const STATUS_BADGE: Record<EmployeeStatus, "success" | "warning" | "expired"> = {
+const STATUS_BADGE: Record<EmployeeStatus, "success" | "warning" | "destructive"> = {
   Active: "success",
   "Expiring Soon": "warning",
-  Expired: "expired",
+  Expired: "destructive",
 };
 
 const STATUS_LABEL: Record<EmployeeStatus, string> = {
@@ -41,9 +40,12 @@ const STATUS_LABEL: Record<EmployeeStatus, string> = {
 
 const PAGE_SIZE = 10;
 
-export function EmployeeTable() {
-  const { employees, isLoading } = useEmployees();
+interface EmployeeTableProps {
+  employees: Employee[];
+  isLoading: boolean;
+}
 
+export function EmployeeTable({ employees, isLoading }: EmployeeTableProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [department, setDepartment] = useState<string>("all");
@@ -87,8 +89,9 @@ export function EmployeeTable() {
   const safePage = Math.min(page, totalPages);
   const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  // Reset page when filters change
-  useMemo(() => setPage(1), [debouncedSearch, department]);
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, department]);
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -96,7 +99,6 @@ export function EmployeeTable() {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -120,7 +122,6 @@ export function EmployeeTable() {
         </Select>
       </div>
 
-      {/* Table or Empty */}
       {sorted.length === 0 ? (
         <EmptyState hasFilters={!!debouncedSearch || department !== "all"} />
       ) : (
@@ -146,7 +147,7 @@ export function EmployeeTable() {
                       <TableCell>{emp.email}</TableCell>
                       <TableCell>{emp.jobTitle}</TableCell>
                       <TableCell>{emp.department}</TableCell>
-                      <TableCell>{new Date(emp.expirationDate).toLocaleDateString("pt-BR")}</TableCell>
+                      <TableCell>{new Date(emp.expirationDate).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</TableCell>
                       <TableCell>
                         <Badge variant={STATUS_BADGE[status]}>{STATUS_LABEL[status]}</Badge>
                       </TableCell>
@@ -157,7 +158,6 @@ export function EmployeeTable() {
             </Table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>
