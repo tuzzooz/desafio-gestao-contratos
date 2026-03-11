@@ -43,6 +43,18 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
+        "status-active": {
+          DEFAULT: "hsl(var(--status-active))",
+          foreground: "hsl(var(--status-active-foreground))",
+        },
+        "status-warning": {
+          DEFAULT: "hsl(var(--status-warning))",
+          foreground: "hsl(var(--status-warning-foreground))",
+        },
+        "status-expired": {
+          DEFAULT: "hsl(var(--status-expired))",
+          foreground: "hsl(var(--status-expired-foreground))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
