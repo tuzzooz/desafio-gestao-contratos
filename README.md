@@ -66,14 +66,11 @@ Para o desenvolvimento inicial acelerado, utilizei a ferramenta Lovable. Em vez 
 [Business Logic] Como o Parse JSON já itera automaticamente listas iniciadas com [ ], explique como configurar um Filtro nativo no Make conectando o JSON diretamente à ação final. A condição do filtro deve garantir que o e-mail não seja enviado repetidamente nos dias anteriores. Forneça a fórmula matemática exata do Make para comparar a dataVencimento estritamente com a data de HOJE + 5 dias.
 [Action] Explique como mapear as variáveis extraídas do JSON no nó do Gmail para enviar o alerta formatado em HTML para o responsável.
 
-**Prompt 6: Geração de Dados de Teste (Edge Cases):**
+6. **Prompt 6: Geração de Dados de Teste (Edge Cases):**
 [Contexto] Preciso de um Mock Payload para colar no nó "Parse JSON" do Make e testar o filtro estrito de 5 dias.
 [Ação] Gere um array JSON com 3 funcionários falsos para cobrir os seguintes cenários:
-
 Um contrato que expira no dia de hoje (Deve ser ignorado pelo filtro).
-
 Um contrato que vence daqui a exatamente 5 dias (Este é o único que o filtro deve aprovar).
-
 Um contrato que vence no mês que vem (Deve ser ignorado pelo filtro).
 Retorne apenas o código JSON limpo para eu colar no Make, utilizando datas relativas ao dia de hoje.
 
@@ -81,10 +78,35 @@ Retorne apenas o código JSON limpo para eu colar no Make, utilizando datas rela
 
 ## ⚙️ 4. Lógica de Automação (Alertas de Vencimento)
 
+Para a camada de automação, utilizei o Make.com, integrando uma lógica de filtragem estrita para garantir a precisão dos alertas e evitar redundâncias (spam de notificações).
+
+Workflow e Fluxo de Dados
+O fluxo foi desenhado para simular o processamento de uma base de dados centralizada. Através de um Mock Payload em JSON, a automação percorre cada registro e aplica uma validação temporal antes de acionar o serviço de e-mail.
+
+<img width="1540" height="597" alt="image" src="https://github.com/user-attachments/assets/469a4105-e004-44e7-9465-3253dd0ae67f" />
+
+Resolução de Problemas (A Regra dos 5 dias)
+Como demonstrado na execução acima, o sistema processou múltiplos funcionários, mas apenas o contrato que atendia à condição de vencimento em exatamente 5 dias (caso da colaboradora Maria) superou o filtro de segurança.
+
+Utilizei a fórmula {{formatDate(addDays(now; 5); "YYYY-MM-DD")}} para comparar as strings de data, garantindo que o e-mail seja disparado uma única vez para cada contrato, respeitando o fuso horário configurado.
+
+Resultado Final: O Alerta no Gmail
+O resultado é um e-mail dinâmico, contendo as variáveis específicas do contrato, enviado diretamente ao gestor responsável:
+
+<img width="1292" height="253" alt="image" src="https://github.com/user-attachments/assets/fe906b5d-ba0b-4a47-a2f5-8606331c3c02" />
+
 
 ---
 
-## 🚀 5. Como Executar Localmente
+## 📸 5. Demonstração Visual
+
+<img width="1633" height="689" alt="image" src="https://github.com/user-attachments/assets/7ead7d14-89d8-46d3-bfab-cc655c9d00c6" />
+<img width="1617" height="744" alt="image" src="https://github.com/user-attachments/assets/ac0587eb-7607-48c4-9ad8-11d8cc729b23" />
+<img width="1355" height="383" alt="image" src="https://github.com/user-attachments/assets/7c9bf995-4a22-4660-83dd-1092b1e74d10" />
+
+---
+
+## 🚀 6. Como Executar Localmente
 
 Siga os passos abaixo para rodar a aplicação em sua máquina:
 
@@ -103,5 +125,3 @@ Siga os passos abaixo para rodar a aplicação em sua máquina:
 3. Inicie o servidor local:Bash
     
     `npm run dev`
-
-## 📸 6. Demonstração Visual
